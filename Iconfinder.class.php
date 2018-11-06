@@ -3,8 +3,8 @@
     /**
      * Iconfinder
      * 
-     * @link    https://github.com/onassar/PHP-Iconfinder
-     * @author  Oliver Nassar <onassar@gmail.com>
+     * @link    https://github.com/getstencil/PHP-Iconfinder
+     * @author  Oliver Nassar <oliver@getstencil.com>
      */
     class Iconfinder
     {
