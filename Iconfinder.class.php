@@ -285,6 +285,7 @@
                 foreach ($size['formats'] as $format) {
                     if ($format['format'] === 'svg') {
                         $vector = $format['download_url'];
+                        $vector = 'https://api.iconfinder.com/v3' . ($vector);
                         break;
                     }
                 }
@@ -348,15 +349,12 @@
          * getPath
          * 
          * @access  public
-         * @param   string $path
+         * @param   string $url
          * @return  null|string
          */
-        public function getPath(string $path): ?string
+        public function getPath(string $url): ?string
         {
-            $base = $this->_getBase();
-            $path = $path;
             $data = $this->_getAuthQueryData();
-            $url = ($base) . ($path);
             $url = $this->_addUrlParams($url, $data);
             $response = $this->_requestUrl($url);
             if ($response === null) {
