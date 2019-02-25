@@ -89,14 +89,14 @@
         }
 
         /**
-         * _addUrlParams
+         * _addURLParams
          * 
          * @access  protected
          * @param   string $url
          * @param   array $params
          * @return  string
          */
-        protected function _addUrlParams(string $url, array $params): string
+        protected function _addURLParams(string $url, array $params): string
         {
             $query = http_build_query($params);
             $piece = parse_url($url, PHP_URL_QUERY);
@@ -200,7 +200,7 @@
                 if (isset($record['vector_sizes']) === false) {
                     continue;
                 }
-                $urls = $this->_getVectorRecordUrls($record);
+                $urls = $this->_getVectorRecordURLs($record);
                 if ($urls === null) {
                     continue;
                 }
@@ -303,31 +303,31 @@
         }
 
         /**
-         * _getTermSearchUrl
+         * _getTermSearchURL
          * 
          * @access  protected
          * @param   string $term
          * @param   array $options
          * @return  string
          */
-        protected function _getTermSearchUrl(string $term, array $options): string
+        protected function _getTermSearchURL(string $term, array $options): string
         {
             $base = $this->_getBase();
             $path = $this->_getTermSearchPath();
             $data = $this->_getTermSearchQueryData($term, $options);
             $url = ($base) . ($path);
-            $url = $this->_addUrlParams($url, $data);
+            $url = $this->_addURLParams($url, $data);
             return $url;
         }
 
         /**
-         * _getVectorRecordUrls
+         * _getVectorRecordURLs
          * 
          * @access  protected
          * @param   array $record
          * @return  null|array
          */
-        protected function _getVectorRecordUrls(array $record): ?array
+        protected function _getVectorRecordURLs(array $record): ?array
         {
             $bitmap = false;
             $vector = false;
@@ -381,13 +381,13 @@
         }
 
         /**
-         * _requestUrl
+         * _requestURL
          * 
          * @access  protected
          * @param   string $url
          * @return  null|string
          */
-        protected function _requestUrl(string $url): ?string
+        protected function _requestURL(string $url): ?string
         {
             $streamContext = $this->_getRequestStreamContext();
             $closure = function() use ($url, $streamContext) {
@@ -426,8 +426,8 @@
          */
         public function getIconsByTerm(string $term, array $options): ?array
         {
-            $url = $this->_getTermSearchUrl($term, $options);
-            $response = $this->_requestUrl($url);
+            $url = $this->_getTermSearchURL($term, $options);
+            $response = $this->_requestURL($url);
             if ($response === null) {
                 return null;
             }
@@ -452,8 +452,8 @@
         public function getPath(string $url): ?string
         {
             $data = $this->_getAuthQueryData();
-            $url = $this->_addUrlParams($url, $data);
-            $response = $this->_requestUrl($url);
+            $url = $this->_addURLParams($url, $data);
+            $response = $this->_requestURL($url);
             if ($response === null) {
                 return null;
             }
