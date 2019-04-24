@@ -11,48 +11,48 @@
         /**
          * _attemptSleepDelay
          * 
-         * @var     int (default: 2000) in milliseconds
          * @access  protected
+         * @var     int (default: 2000) in milliseconds
          */
         protected $_attemptSleepDelay = 2000;
 
         /**
          * _base
          * 
-         * @var     string (default: 'https://api.iconfinder.com/v3')
          * @access  protected
+         * @var     string (default: 'https://api.iconfinder.com/v3')
          */
         protected $_base = 'https://api.iconfinder.com/v3';
 
         /**
          * _id
          * 
-         * @var     null|string
          * @access  protected
+         * @var     null|string
          */
         protected $_id = null;
 
         /**
          * _logClosure
          * 
-         * @var     null|Closure (default: null)
          * @access  protected
+         * @var     null|Closure (default: null)
          */
         protected $_logClosure = null;
 
         /**
          * _maxPerPage
          * 
-         * @var     int (default: 100)
          * @access  protected
+         * @var     int (default: 100)
          */
         protected $_maxPerPage = 100;
 
         /**
          * _paths
          * 
-         * @var     array
          * @access  protected
+         * @var     array
          */
         protected $_paths = array(
             'search' => '/icons/search'
@@ -61,16 +61,16 @@
         /**
          * _requestTimeout
          * 
-         * @var     int (default: 10)
          * @access  protected
+         * @var     int (default: 10)
          */
         protected $_requestTimeout = 10;
 
         /**
          * _secret
          * 
-         * @var     null|string
          * @access  protected
+         * @var     null|string
          */
         protected $_secret = null;
 
