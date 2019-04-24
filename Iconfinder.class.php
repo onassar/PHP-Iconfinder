@@ -28,7 +28,7 @@
          * _id
          * 
          * @access  protected
-         * @var     null|string
+         * @var     null|string (default: null)
          */
         protected $_id = null;
 
@@ -70,7 +70,7 @@
          * _secret
          * 
          * @access  protected
-         * @var     null|string
+         * @var     null|string (default: null)
          */
         protected $_secret = null;
 
