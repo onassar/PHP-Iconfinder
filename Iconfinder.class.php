@@ -122,8 +122,8 @@
          * Method which accepts a closure, and repeats calling it until
          * $maxAttempts have been made.
          * 
-         * This was added to account for file_get_contents failing (for a
-         * variety of reasons).
+         * This was added to account for requests failing (for a variety of
+         * reasons).
          * 
          * @access  protected
          * @param   Closure $closure
