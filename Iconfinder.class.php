@@ -3,6 +3,8 @@
     /**
      * Iconfinder
      * 
+     * PHP wrapper for Iconfinder
+     * 
      * @link    https://github.com/getstencil/PHP-Iconfinder
      * @author  Oliver Nassar <oliver@getstencil.com>
      */
