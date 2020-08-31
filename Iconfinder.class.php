@@ -60,13 +60,13 @@
         /**
          * __construct
          * 
+         * @see     https://developer.iconfinder.com/reference/search
          * @access  public
          * @return  void
          */
         public function __construct()
         {
             $this->_maxResultsPerRequest = 100;
-            // $this->_maxResultsPerRequest = 16;
             $this->_responseResultsIndex = 'icons';
         }
 
