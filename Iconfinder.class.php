@@ -1,7 +1,7 @@
 <?php
 
     // Namespace overhead
-    namespace onassar\Iconfinder;
+    namespace getstencil\Iconfinder;
     use onassar\RemoteRequests;
 
     /**
