@@ -30,4 +30,4 @@ exit(0);
 
 ### Note
 Requires
-[PHP-RemoteResources](https://github.com/onassar/PHP-RemoteResources).
+[PHP-RemoteRequests](https://github.com/onassar/PHP-RemoteRequests).
