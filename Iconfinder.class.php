@@ -1,62 +1,61 @@
 <?php
 
+    // Namespace overhead
+    namespace onassar\Iconfinder;
+    use onassar\RemoteRequests;
+
     /**
      * Iconfinder
      * 
-     * PHP wrapper for Iconfinder
+     * PHP wrapper for Iconfinder.
      * 
      * @link    https://github.com/getstencil/PHP-Iconfinder
      * @author  Oliver Nassar <oliver@getstencil.com>
+     * @extends RemoteRequests\Base
      */
-    class Iconfinder
+    class Iconfinder extends RemoteRequests\Base
     {
         /**
-         * _attemptSleepDelay
+         * RemoteRequets\Pagination
          * 
-         * @access  protected
-         * @var     int (default: 2000) in milliseconds
          */
-        protected $_attemptSleepDelay = 2000;
+        use RemoteRequests\Pagination;
 
         /**
-         * _base
+         * RemoteRequets\RateLimits
          * 
-         * @access  protected
-         * @var     string (default: 'https://api.iconfinder.com/v3')
          */
-        protected $_base = 'https://api.iconfinder.com/v3';
+        use RemoteRequests\RateLimits;
 
         /**
-         * _id
+         * RemoteRequets\SearchAPI
+         * 
+         */
+        use RemoteRequests\SearchAPI;
+
+        /**
+         * _apiId
          * 
          * @access  protected
          * @var     null|string (default: null)
          */
-        protected $_id = null;
+        protected $_apiId = null;
 
         /**
-         * _logClosure
+         * _apiSecret
          * 
          * @access  protected
-         * @var     null|Closure (default: null)
+         * @var     null|string (default: null)
          */
-        protected $_logClosure = null;
+        protected $_apiSecret = null;
 
         /**
-         * _maxAttempts
+         * _host
          * 
          * @access  protected
-         * @var     int (default: 2)
+         * @var     string (default: 'api.iconfinder.com')
          */
-        protected $_maxAttempts = 2;
-
-        /**
-         * _maxPerPage
-         * 
-         * @access  protected
-         * @var     int (default: 100)
-         */
-        protected $_maxPerPage = 100;
+        protected $_host = 'api.iconfinder.com';
 
         /**
          * _paths
@@ -65,286 +64,126 @@
          * @var     array
          */
         protected $_paths = array(
-            'search' => '/icons/search'
+            'search' => '/v3/icons/search'
         );
-
-        /**
-         * _requestTimeout
-         * 
-         * @access  protected
-         * @var     int (default: 10)
-         */
-        protected $_requestTimeout = 10;
-
-        /**
-         * _secret
-         * 
-         * @access  protected
-         * @var     null|string (default: null)
-         */
-        protected $_secret = null;
 
         /**
          * __construct
          * 
          * @access  public
-         * @param   string $id
-         * @param   string $secret
          * @return  void
          */
-        public function __construct(string $id, string $secret)
+        public function __construct()
         {
-            $this->_id = $id;
-            $this->_secret = $secret;
+            $this->_maxResultsPerPage = 100;
+            // $this->_maxResultsPerPage = 16;
+            $this->_responseResultsIndex = 'icons';
         }
 
         /**
-         * _addURLParams
+         * _formatSearchResults
          * 
          * @access  protected
-         * @param   string $url
-         * @param   array $params
-         * @return  string
+         * @param   array $results
+         * @param   string $query
+         * @return  array
          */
-        protected function _addURLParams(string $url, array $params): string
+        protected function _formatSearchResults(array $results, string $query): array
         {
-            if (empty($params) === true) {
-                return $url;
-            }
-            $queryString = http_build_query($params);
-            $piece = parse_url($url, PHP_URL_QUERY);
-            if ($piece === null) {
-                $url = ($url) . '?' . ($queryString);
-                return $url;
-            }
-            $url = ($url) . '&' . ($queryString);
-            return $url;
+            $results = $this->_includeOriginalQuery($results, $query);
+            $results = $this->_normalizeSearchResults($results);
+            return $results;
         }
 
         /**
-         * _attempt
-         * 
-         * Method which accepts a closure, and repeats calling it until
-         * $maxAttempts have been made.
-         * 
-         * This was added to account for requests failing (for a variety of
-         * reasons).
-         * 
-         * @access  protected
-         * @param   Closure $closure
-         * @param   int $attempt (default: 1)
-         * @return  null|string
-         */
-        protected function _attempt(Closure $closure, int $attempt = 1): ?string
-        {
-            try {
-                $response = call_user_func($closure);
-                if ($attempt !== 1) {
-                    $msg = 'Subsequent success on attempt #' . ($attempt);
-                    $this->_log($msg);
-                }
-                return $response;
-            } catch (Exception $exception) {
-                $msg = 'Failed closure';
-                $this->_log($msg);
-                $msg = $exception->getMessage();
-                $this->_log($msg);
-                $maxAttempts = $this->_maxAttempts;
-                if ($attempt < $maxAttempts) {
-                    $delay = $this->_attemptSleepDelay;
-                    $msg = 'Going to sleep for ' . ($delay);
-                    Utils\Log::log($msg);
-                    $this->_sleep($delay);
-                    $response = $this->_attempt($closure, $attempt + 1);
-                    return $response;
-                }
-                $msg = 'Failed attempt';
-                $this->_log($msg);
-            }
-            return null;
-        }
-
-        /**
-         * _getAuthQueryData
+         * _getAuthRequestData
          * 
          * @access  protected
          * @return  array
          */
-        protected function _getAuthQueryData(): array
+        protected function _getAuthRequestData(): array
         {
-            $data = array(
-                'client_id' => $this->_id,
-                'client_secret' => $this->_secret
+            $authRequestData = array(
+                'client_id' => $this->_apiId,
+                'client_secret' => $this->_apiSecret
             );
-            return $data;
+            return $authRequestData;
         }
 
         /**
-         * _getBase
+         * _getPaginationRequestData
          * 
          * @access  protected
-         * @return  string
-         */
-        protected function _getBase(): string
-        {
-            $base = $this->_base;
-            return $base;
-        }
-
-        /**
-         * _getNormalizedVectorData
-         * 
-         * @access  protected
-         * @param   string $term
-         * @param   array $decodedResponse
-         * @return  null|array
-         */
-        protected function _getNormalizedVectorData(string $term, array $decodedResponse): ?array
-        {
-            if (isset($decodedResponse['icons']) === false) {
-                return null;
-            }
-            $vectors = array();
-            $records = (array) $decodedResponse['icons'];
-            foreach ($records as $record) {
-                if (isset($record['raster_sizes']) === false) {
-                    continue;
-                }
-                if (isset($record['vector_sizes']) === false) {
-                    continue;
-                }
-                $urls = $this->_getVectorRecordURLs($record);
-                if ($urls === null) {
-                    continue;
-                }
-                if (isset($record['tags']) === false) {
-                    continue;
-                }
-                if (isset($record['icon_id']) === false) {
-                    continue;
-                }
-                $styles = array();
-                if (isset($record['styles']) === true) {
-                    foreach ($record['styles'] as $style) {
-                        array_push($styles, $style['identifier']);
-                    }
-                }
-                $vector = array(
-                    'id' => $record['icon_id'],
-                    'tags' => $record['tags'],
-                    'color' => (int) $record['is_icon_glyph'] === 0,
-                    'original_term' => $term,
-                    'styles' => $styles,
-                    'urls' => $urls
-                );
-                array_push($vectors, $vector);
-            }
-            return $vectors;
-        }
-
-        /**
-         * _getRandomString
-         * 
-         * @see     https://stackoverflow.com/questions/4356289/php-random-string-generator
-         * @access  protected
-         * @param   int $length (default: 32)
-         * @return  string
-         */
-        protected function _getRandomString(int $length = 32): string
-        {
-            $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-            $charactersLength = strlen($characters);
-            $randomString = '';
-            for ($i = 0; $i < $length; $i++) {
-                $randomString .= $characters[rand(0, $charactersLength - 1)];
-            }
-            return $randomString;
-        }
-
-        /**
-         * _getRequestStreamContext
-         * 
-         * @access  protected
-         * @return  resource
-         */
-        protected function _getRequestStreamContext()
-        {
-            $requestTimeout = $this->_requestTimeout;
-            $options = array(
-                'http' => array(
-                    'method'  => 'GET',
-                    'timeout' => $requestTimeout
-                )
-            );
-            $streamContext = stream_context_create($options);
-            return $streamContext;
-        }
-
-        /**
-         * _getTermSearchPath
-         * 
-         * @access  protected
-         * @return  string
-         */
-        protected function _getTermSearchPath(): string
-        {
-            $path = $this->_paths['search'];
-            return $path;
-        }
-
-        /**
-         * _getTermSearchQueryData
-         * 
-         * @access  protected
-         * @param   string $term
-         * @param   array $options
          * @return  array
          */
-        protected function _getTermSearchQueryData(string $term, array $options): array
+        protected function _getPaginationRequestData(): array
         {
-            $data = array(
-                'client_id' => $this->_id,
-                'client_secret' => $this->_secret,
-                'query' => $term,
-                'count' => (int) $options['limit'],
-                'offset' => (int) $options['offset'],
-                'premium' => 0,
-                'vector' => 1,
-                'nocache' => $this->_getRandomString()
-            );
-            return $data;
+            $count = $this->_limit;
+            $offset = $this->_offset;
+            $paginationRequestData = compact('count', 'offset');
+            return $paginationRequestData;
         }
 
         /**
-         * _getTermSearchURL
+         * _getPathRequestURL
          * 
          * @access  protected
-         * @param   string $term
-         * @param   array $options
+         * @param   string $path
          * @return  string
          */
-        protected function _getTermSearchURL(string $term, array $options): string
+        protected function _getPathRequestURL(string $path): string
         {
-            $base = $this->_getBase();
-            $path = $this->_getTermSearchPath();
-            $data = $this->_getTermSearchQueryData($term, $options);
-            $url = ($base) . ($path);
-            $url = $this->_addURLParams($url, $data);
+            $host = $this->_host;
+            $url = 'https://' . ($host) . ($path);
             return $url;
         }
 
         /**
-         * _getVectorRecordURLs
+         * _getRateLimitResetValue
+         * 
+         * Iconfinder has the reset set as a date time value rather than a
+         * timestamp.
          * 
          * @access  protected
-         * @param   array $record
+         * @param   
+         * @return  null|int|string
+         */
+        protected function _getRateLimitResetValue()
+        {
+            $reset = $this->_getRateLimitProperty('X-Ratelimit-Reset');
+            $reset = strtotime($reset);
+            return $reset;
+        }
+
+        /**
+         * _getSearchQueryRequestData
+         * 
+         * @access  protected
+         * @param   string $query
+         * @return  array
+         */
+        protected function _getSearchQueryRequestData(string $query): array
+        {
+            $premium = 0;
+            $vector = 1;
+            $nocache = $this->_getRandomString(8);
+            $args = array('query', 'premium', 'vector', 'nocache');
+            $queryRequestData = compact(... $args);
+            return $queryRequestData;
+        }
+
+        /**
+         * _getSearchResultURLs
+         * 
+         * @access  protected
+         * @param   array $result
          * @return  null|array
          */
-        protected function _getVectorRecordURLs(array $record): ?array
+        protected function _getSearchResultURLs(array $result): ?array
         {
             $bitmap = false;
             $vector = false;
-            foreach ($record['raster_sizes'] as $size) {
+            foreach ($result['raster_sizes'] as $size) {
                 if ((int) $size['size_width'] === 128) {
                     $bitmap = $size['formats'][0]['preview_url'];
                     break;
@@ -353,7 +192,7 @@
             if ($bitmap === false) {
                 return null;
             }
-            foreach ($record['vector_sizes'] as $size) {
+            foreach ($result['vector_sizes'] as $size) {
                 foreach ($size['formats'] as $format) {
                     if ($format['format'] === 'svg') {
                         $vector = $format['download_url'];
@@ -375,125 +214,117 @@
         }
 
         /**
-         * _log
+         * _normalizeSearchResults
          * 
          * @access  protected
-         * @param   string $msg
-         * @return  bool
+         * @param   array $results
+         * @return  array
          */
-        protected function _log(string $msg): bool
+        protected function _normalizeSearchResults(array $results): array
         {
-            if ($this->_logClosure === null) {
-                error_log($msg);
-                return false;
+            foreach ($results as $index => $result) {
+                if (isset($result['icon_id']) === false) {
+                    unset($results[$index]);
+                    continue;
+                }
+                if (isset($result['tags']) === false) {
+                    unset($results[$index]);
+                    continue;
+                }
+                if (isset($result['raster_sizes']) === false) {
+                    unset($results[$index]);
+                    continue;
+                }
+                if (isset($result['vector_sizes']) === false) {
+                    unset($results[$index]);
+                    continue;
+                }
+                $urls = $this->_getSearchResultURLs($result);
+                if ($urls === null) {
+                    unset($results[$index]);
+                    continue;
+                }
+                $styles = array();
+                if (isset($result['styles']) === true) {
+                    foreach ($result['styles'] as $style) {
+                        array_push($styles, $style['identifier']);
+                    }
+                }
+                $results[$index] = array(
+                    'id' => $result['icon_id'],
+                    'tags' => $result['tags'],
+                    'color' => (int) $result['is_icon_glyph'] === 0,
+                    'styles' => $styles,
+                    'urls' => $urls
+                );
             }
-            $closure = $this->_logClosure;
-            $args = array($msg);
-            call_user_func_array($closure, $args);
-            return true;
+            return $results;
         }
 
         /**
-         * _requestURL
+         * _setPathRequestData
          * 
          * @access  protected
-         * @param   string $url
-         * @return  null|string
-         */
-        protected function _requestURL(string $url): ?string
-        {
-            $streamContext = $this->_getRequestStreamContext();
-            $closure = function() use ($url, $streamContext) {
-                $response = file_get_contents($url, false, $streamContext);
-                return $response;
-            };
-            $response = $this->_attempt($closure);
-            if ($response === false) {
-                return null;
-            }
-            if ($response === null) {
-                return null;
-            }
-            return $response;
-        }
-
-        /**
-         * _sleep
-         * 
-         * @access  protected
-         * @param   int $duration in milliseconds
          * @return  void
          */
-        protected function _sleep(int $duration): void
+        protected function _setPathRequestData(): void
         {
-            usleep($duration * 1000);
+            $authRequestData = $this->_getAuthRequestData();
+            $this->mergeRequestData($authRequestData);
         }
 
         /**
-         * getIconsByTerm
+         * _setPathRequestURL
          * 
-         * @access  public
-         * @param   string $term
-         * @param   array $options
-         * @return  null|array
+         * @access  protected
+         * @param   string $path
+         * @return  void
          */
-        public function getIconsByTerm(string $term, array $options): ?array
+        protected function _setPathRequestURL(string $path): void
         {
-            $url = $this->_getTermSearchURL($term, $options);
-            $response = $this->_requestURL($url);
-            if ($response === null) {
-                return null;
-            }
-            $decodedResponse = json_decode($response, true);
-            if ($decodedResponse === null) {
-                return null;
-            }
-            $vectors = $this->_getNormalizedVectorData($term, $decodedResponse);
-            if ($vectors === null) {
-                return null;
-            }
-            return $vectors;
+            $pathURL = $this->_getPathRequestURL($path);
+            $this->setURL($pathURL);
         }
 
         /**
          * getPath
          * 
+         * Calls parent::_getURLResponse to bypass the json expected response
+         * type setting.
+         * 
          * @access  public
-         * @param   string $url
+         * @param   string $path
          * @return  null|string
          */
-        public function getPath(string $url): ?string
+        public function getPath(string $path): ?string
         {
-            $data = $this->_getAuthQueryData();
-            $url = $this->_addURLParams($url, $data);
-            $response = $this->_requestURL($url);
-            if ($response === null) {
-                return null;
-            }
+            $this->_setPathRequestData();
+            $this->_setPathRequestURL($path);
+            $response = parent::_getURLResponse() ?? null;
             return $response;
         }
 
         /**
-         * setLogClosure
+         * setAPIId
          * 
          * @access  public
-         * @param   Closure $closure
+         * @param   string $apiId
          * @return  void
          */
-        public function setLogClosure(Closure $closure): void
+        public function setAPIId(string $apiId): void
         {
-            $this->_logClosure = $closure;
+            $this->_apiId = $apiId;
         }
 
         /**
-         * setMaxAttempts
+         * setAPISecret
          * 
          * @access  public
-         * @param   int $maxAttempts
+         * @param   string $apiSecret
          * @return  void
          */
-        public function setMaxAttempts(int $maxAttempts): void
+        public function setAPISecret(string $apiSecret): void
         {
-            $this->_maxAttempts = $maxAttempts;
+            $this->_apiSecret = $apiSecret;
         }
     }
