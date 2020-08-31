@@ -75,14 +75,15 @@
          */
         public function __construct()
         {
-            $this->_maxResultsPerPage = 100;
-            // $this->_maxResultsPerPage = 16;
+            $this->_maxResultsPerRequest = 100;
+            // $this->_maxResultsPerRequest = 16;
             $this->_responseResultsIndex = 'icons';
         }
 
         /**
          * _formatSearchResults
          * 
+         * @note    Ordered
          * @access  protected
          * @param   array $results
          * @param   string $query
@@ -90,8 +91,8 @@
          */
         protected function _formatSearchResults(array $results, string $query): array
         {
-            $results = $this->_includeOriginalQuery($results, $query);
             $results = $this->_normalizeSearchResults($results);
+            $results = $this->_includeOriginalQuery($results, $query);
             return $results;
         }
 
@@ -99,9 +100,10 @@
          * _getAuthRequestData
          * 
          * @access  protected
+         * @param   string $requestType
          * @return  array
          */
-        protected function _getAuthRequestData(): array
+        protected function _getAuthRequestData(string $requestType): array
         {
             $authRequestData = array(
                 'client_id' => $this->_apiId,
@@ -118,7 +120,7 @@
          */
         protected function _getPaginationRequestData(): array
         {
-            $count = $this->_limit;
+            $amount = $this->_getResultsPerRequest();
             $offset = $this->_offset;
             $paginationRequestData = compact('count', 'offset');
             return $paginationRequestData;
@@ -269,7 +271,7 @@
          */
         protected function _setPathRequestData(): void
         {
-            $authRequestData = $this->_getAuthRequestData();
+            $authRequestData = $this->_getAuthRequestData('path');
             $this->mergeRequestData($authRequestData);
         }
 
