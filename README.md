@@ -8,7 +8,7 @@ PHP SDK for running queries against the millions of icons provided by
 
 ### Sample Search
 ``` php
-$client = new onassar\Iconfinder\Iconfinder();
+$client = new getstencil\Iconfinder\Iconfinder();
 $client->setAPIKey('***');
 $client->setAPISecret('***');
 $client->setLimit(10);
@@ -20,7 +20,7 @@ exit(0);
 
 ### Sample Download
 ``` php
-$client = new onassar\Iconfinder\Iconfinder();
+$client = new getstencil\Iconfinder\Iconfinder();
 $client->setAPIKey('***');
 $client->setAPISecret('***');
 $content = $client->getPath('/path/to/svg') ?? 'Could not load content';
