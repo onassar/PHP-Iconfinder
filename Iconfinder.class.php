@@ -110,7 +110,7 @@
          */
         protected function _getPaginationRequestData(): array
         {
-            $amount = $this->_getResultsPerRequest();
+            $count = $this->_getResultsPerRequest();
             $offset = $this->_offset;
             $paginationRequestData = compact('count', 'offset');
             return $paginationRequestData;
