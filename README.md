@@ -6,6 +6,9 @@ PHP SDK for running queries against the millions of icons provided by
 - Searches
 - SVG downloading
 
+### Requirements
+- [PHP-RemoteRequests](https://github.com/onassar/PHP-RemoteRequests)
+
 ### Sample Search
 ``` php
 $client = new getstencil\Iconfinder\Iconfinder();
@@ -27,7 +30,3 @@ $content = $client->getPath('/path/to/svg') ?? 'Could not load content';
 echo $content;
 exit(0);
 ```
-
-### Note
-Requires
-[PHP-RemoteRequests](https://github.com/onassar/PHP-RemoteRequests).
