@@ -5,7 +5,7 @@
     use onassar\RemoteRequests;
 
     /**
-     * Iconfinder
+     * Base
      * 
      * PHP wrapper for Iconfinder.
      * 
@@ -13,7 +13,7 @@
      * @author  Oliver Nassar <oliver@getstencil.com>
      * @extends RemoteRequests\Base
      */
-    class Iconfinder extends RemoteRequests\Base
+    class Base extends RemoteRequests\Base
     {
         /**
          * Traits
