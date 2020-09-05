@@ -6,7 +6,7 @@ PHP SDK for running queries against the millions of icons provided by
 - Searches
 - SVG downloading
 
-### Requirements
+### Requires
 - [PHP-RemoteRequests](https://github.com/onassar/PHP-RemoteRequests)
 
 ### Sample Search
