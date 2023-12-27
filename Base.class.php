@@ -1,7 +1,7 @@
 <?php
 
     // Namespace overhead
-    namespace getstencil\Iconfinder;
+    namespace onassar\Iconfinder;
     use onassar\RemoteRequests;
 
     /**
@@ -9,8 +9,8 @@
      * 
      * PHP wrapper for Iconfinder.
      * 
-     * @link    https://github.com/getstencil/PHP-Iconfinder
-     * @author  Oliver Nassar <oliver@getstencil.com>
+     * @link    https://github.com/onassar/PHP-Iconfinder
+     * @author  Oliver Nassar <onassar@gmail.com>
      * @extends RemoteRequests\Base
      */
     class Base extends RemoteRequests\Base
